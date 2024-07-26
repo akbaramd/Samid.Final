@@ -4,6 +4,7 @@ using FastEndpoints.Swagger;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Samid.Application.Interfaces;
+using Samid.Application.Services;
 using Samid.Domain.Interface;
 using Samid.Inrastructure.Persistence;
 using Samid.Inrastructure.Repositories;
@@ -50,6 +51,10 @@ if (app.Environment.IsDevelopment())
     s.ConfigureDefaults();
   });
 }
+
+app.UseMiddleware<ExceptionHandlingMiddleware>();
+
+
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
