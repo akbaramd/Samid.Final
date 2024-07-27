@@ -3,11 +3,8 @@ using FastEndpoints.Security;
 using FastEndpoints.Swagger;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Samid.Application.Interfaces;
-using Samid.Application.Services;
-using Samid.Domain.Interface;
-using Samid.Inrastructure.Persistence;
-using Samid.Inrastructure.Repositories;
+using Samid.Infrastructure.Persistence;
+using Samid.Inrastructure.Mappings;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,12 +15,18 @@ builder.Services.AddOpenApi();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
   options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddIdentity<User, IdentityRole<Guid>>()
+builder.Services.AddIdentityCore<User>()
+  .AddRoles<IdentityRole<Guid>>()
   .AddEntityFrameworkStores<ApplicationDbContext>()
   .AddDefaultTokenProviders();
+
 var signingKey = builder.Configuration["Jwt:Key"] ?? "M5T8Qr8LsPuzhPiXE5lOAnPZ7WGrPyXPrNTpLVZ7ysQ=";
-builder.Services.AddAuthenticationJwtBearer(s => s.SigningKey =signingKey) //add this
-  .AddAuthorization().AddFastEndpoints();
+builder.Services
+  .AddAuthenticationJwtBearer(s => s.SigningKey = signingKey) //add this
+  .AddAuthorization()
+  .AddFastEndpoints();
+
+builder.Services.AddAutoMapper(typeof(MappingProfile));
 builder.Services.SwaggerDocument(o =>
 {
   o.DocumentSettings = s =>
@@ -34,10 +37,8 @@ builder.Services.SwaggerDocument(o =>
     s.EnableJWTBearerAuth();
   };
 });
-  
 
-builder.Services.AddScoped(typeof(IRepository<>),typeof(Repository<>));
-builder.Services.AddScoped<IAuthService,AuthService>();
+
 
 var app = builder.Build();
 
@@ -62,28 +63,11 @@ app.UseAuthorization();
 
 app.UseFastEndpoints();
 
-var summaries = new[]
+using (var scope = app.Services.CreateScope())
 {
-  "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
-
-app.MapGet("/weatherforecast", () =>
-  {
-    var forecast = Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-          DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-          Random.Shared.Next(-20, 55),
-          summaries[Random.Shared.Next(summaries.Length)]
-        ))
-      .ToArray();
-    return forecast;
-  })
-  .WithName("GetWeatherForecast");
+  var services = scope.ServiceProvider;
+  var context = services.GetRequiredService<ApplicationDbContext>();
+  ApplicationDbContextSeed.Seed(context);
+}
 
 app.Run();
-
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-  public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}

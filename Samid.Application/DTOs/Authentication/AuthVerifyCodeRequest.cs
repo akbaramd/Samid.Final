@@ -3,14 +3,13 @@ using FluentValidation;
 
 namespace Samid.Application.DTOs.Authentication;
 
-public class VerifyCodeRequest
+public class AuthVerifyCodeRequest
 {
   public string PhoneNumber { get; set; } = String.Empty;
   public string Code { get; set; } = String.Empty;
 }
 
-
-public class VerifyCodeRequestValidator : Validator<VerifyCodeRequest>
+public class VerifyCodeRequestValidator : Validator<AuthVerifyCodeRequest>
 {
   public VerifyCodeRequestValidator()
   {

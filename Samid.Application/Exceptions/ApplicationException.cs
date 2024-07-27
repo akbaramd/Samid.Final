@@ -1,6 +1,11 @@
 ﻿namespace Samid.Application.Exceptions;
 
-public class ApplicationException : Exception
+public abstract class ApplicationException : Exception
 {
-    public ApplicationException(string message) : base(message) { }
+  protected ApplicationException(string message, int statusCode = 400) : base(message)
+  {
+    StatusCode = statusCode;
+  }
+
+  public int StatusCode { get; }
 }

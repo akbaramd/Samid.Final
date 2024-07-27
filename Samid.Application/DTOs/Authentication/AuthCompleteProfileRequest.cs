@@ -1,24 +1,23 @@
-﻿using FastEndpoints;
+﻿using System.Text.Json.Serialization;
+using AutoMapper.Configuration.Annotations;
+using FastEndpoints;
 using FluentValidation;
 
 namespace Samid.Application.DTOs.Authentication;
 
-public class CompleteProfileRequest
+public class AuthCompleteProfileRequest
 {
-  public string UserId { get; set; } = string.Empty;
+  [JsonIgnore] [Ignore] public string UserId { get; set; } = string.Empty;
+
   public string FirstName { get; set; } = string.Empty;
   public string LastName { get; set; } = string.Empty;
   public DateTime BirthDate { get; set; }
 }
 
-
-public class CompleteProfileRequestValidator : Validator<CompleteProfileRequest>
+public class CompleteProfileRequestValidator : Validator<AuthCompleteProfileRequest>
 {
   public CompleteProfileRequestValidator()
   {
-    RuleFor(x => x.UserId)
-      .NotEmpty().WithMessage("User Id is required");
-
     RuleFor(x => x.FirstName)
       .NotEmpty().WithMessage("First name is required");
 

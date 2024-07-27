@@ -7,21 +7,22 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="FastEndpoints" Version="5.27.0.13-beta" />
-        <PackageReference Include="FastEndpoints.Security" Version="5.27.0.13-beta" />
-        <PackageReference Include="FastEndpoints.Swagger" Version="5.27.0.13-beta" />
+        <PackageReference Include="AutoMapper" Version="13.0.1"/>
+        <PackageReference Include="FastEndpoints" Version="5.27.0.13-beta"/>
+        <PackageReference Include="FastEndpoints.Security" Version="5.27.0.13-beta"/>
+        <PackageReference Include="FastEndpoints.Swagger" Version="5.27.0.13-beta"/>
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.0-preview.5.24306.11"/>
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.0-preview.6.24327.4">
-          <PrivateAssets>all</PrivateAssets>
-          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.0.0-preview.6.24327.4" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.0.0-preview.6.24327.4"/>
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Samid.Application\Samid.Application.csproj" />
-      <ProjectReference Include="..\Samid.Domain\Samid.Domain.csproj" />
-      <ProjectReference Include="..\Samid.Infrastructure\Samid.Infrastructure.csproj" />
+        <ProjectReference Include="..\Samid.Application\Samid.Application.csproj"/>
+        <ProjectReference Include="..\Samid.Domain\Samid.Domain.csproj"/>
+        <ProjectReference Include="..\Samid.Infrastructure\Samid.Infrastructure.csproj"/>
     </ItemGroup>
 
 </Project>

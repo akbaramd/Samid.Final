@@ -1,11 +1,17 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Samid.Domain.Entities;
 
-namespace Samid.Inrastructure.Persistence;
+namespace Samid.Infrastructure.Persistence;
 
 public class ApplicationDbContext : IdentityDbContext<User, IdentityRole<Guid>, Guid>
 {
+  public DbSet<AcademicYear> AcademicYears { get; set; }
+  public DbSet<GradeOfStudy> GradeOfStudies { get; set; }
+  public DbSet<FieldOfStudy> FieldOfStudies { get; set; }
+  public DbSet<GradeFieldOfStudy> GradeFieldOfStudies { get; set; }
+
   public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
     : base(options)
   {
@@ -15,19 +21,18 @@ public class ApplicationDbContext : IdentityDbContext<User, IdentityRole<Guid>, 
   {
     base.OnModelCreating(builder);
 
-    // Configure the User entity
-    builder.Entity<User>(entity =>
-    {
-      entity.Property(e => e.FirstName)
-        .HasMaxLength(100)
-        .IsRequired(false);
+    builder.Entity<GradeFieldOfStudy>()
+      .HasKey(gfs => new { gfs.GradeOfStudyId, gfs.FieldOfStudyId });
 
-      entity.Property(e => e.LastName)
-        .HasMaxLength(100)
-        .IsRequired(false);
+    builder.Entity<GradeFieldOfStudy>()
+      .HasOne(gfs => gfs.GradeOfStudy)
+      .WithMany(g => g.GradeFields)
+      .HasForeignKey(gfs => gfs.GradeOfStudyId);
 
-      entity.Property(e => e.BirthDate)
-        .IsRequired(false);
-    });
+    builder.Entity<GradeFieldOfStudy>()
+      .HasOne(gfs => gfs.FieldOfStudy)
+      .WithMany(f => f.GradeFields)
+      .HasForeignKey(gfs => gfs.FieldOfStudyId);
+
   }
 }

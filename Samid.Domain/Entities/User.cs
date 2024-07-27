@@ -1,21 +1,18 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using System;
+using System.Collections.Generic;
+using Samid.Domain.Entities;
 
 public class User : IdentityUser<Guid>
 {
-    public string? FirstName { get; private set; }
-    public string? LastName { get; private set; }
-    public DateTime? BirthDate { get; private set; }
-    public int VerificationAttempts { get; private set; }
-    public DateTime? LastVerificationAttempt { get; private set; }
-    public int VerificationFailures { get; private set; }
-    public DateTime? LastVerificationFailure { get; private set; }
-
     // Parameterless constructor for EF Core
-    public User() { }
+    public User() 
+    {
+        AcademicYears = new List<AcademicYear>();
+    }
 
     // Public constructor for use in application code
-    public User(string firstName, string lastName, DateTime birthDate)
+    public User(string firstName, string lastName, DateTime birthDate) : this()
     {
         Id = Guid.NewGuid();
         FirstName = firstName;
@@ -26,6 +23,16 @@ public class User : IdentityUser<Guid>
         VerificationFailures = 0;
         LastVerificationFailure = null;
     }
+
+    public string? FirstName { get; private set; }
+    public string? LastName { get; private set; }
+    public DateTime? BirthDate { get; private set; }
+    public int VerificationAttempts { get; private set; }
+    public DateTime? LastVerificationAttempt { get; private set; }
+    public int VerificationFailures { get; private set; }
+    public DateTime? LastVerificationFailure { get; private set; }
+
+    public ICollection<AcademicYear> AcademicYears { get; private set; }
 
     // Domain methods
     public void UpdateName(string firstName, string lastName)

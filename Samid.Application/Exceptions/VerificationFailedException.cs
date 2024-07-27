@@ -2,5 +2,7 @@
 
 public class VerificationFailedException : ApplicationException
 {
-    public VerificationFailedException(string message) : base(message) { }
+  public VerificationFailedException(string message) : base(message)
+  {
+  }
 }
