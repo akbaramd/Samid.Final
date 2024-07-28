@@ -1,6 +1,9 @@
 ﻿using FastEndpoints;
 using Microsoft.AspNetCore.Identity;
 using Samid.Application.DTOs.Authentication;
+using Samid.Domain.Entities;
+
+namespace Samid.Api.Endpoints.Auth;
 
 public class AuthSendVerificationCodeEndpoint : Endpoint<AuthSendCodeRequest>
 {
@@ -56,7 +59,8 @@ public class AuthSendVerificationCodeEndpoint : Endpoint<AuthSendCodeRequest>
     user.IncrementVerificationAttempts();
     await _userManager.UpdateAsync(user);
 
-    var code = _random.Next(100000, 999999).ToString();
+    // var code = _random.Next(100000, 999999).ToString();
+    var code = "123456";
     _logger.LogInformation("Generated verification code: {Code}", code);
 
     // Here, you should send the code via SMS to the user's phone number

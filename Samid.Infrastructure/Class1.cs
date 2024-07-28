@@ -1,4 +1,4 @@
-﻿namespace Samid.Inrastructure;
+﻿namespace Samid.Infrastructure;
 
 public class Class1
 {

@@ -3,7 +3,17 @@
 public class GradeOfStudy
 {
   // Private fields for encapsulation
-  private readonly List<UserAcademicYear> _academicYears = new List<UserAcademicYear>();
+  private readonly List<UserAcademicYear> _academicYears = new();
+  private readonly List<GradeFieldOfStudy> _gradeFields = new();
+
+  protected GradeOfStudy() { }
+
+  // Constructor to initialize the entity
+  public GradeOfStudy(Guid id, string title)
+  {
+    Id = id;
+    Title = title;
+  }
 
   // Properties with private setters to ensure encapsulation
   public Guid Id { get; private set; }
@@ -11,17 +21,7 @@ public class GradeOfStudy
 
   // Readonly collection to expose academic years
   public IReadOnlyCollection<UserAcademicYear> AcademicYears => _academicYears.AsReadOnly();
-  private readonly List<GradeFieldOfStudy> _gradeFields = new List<GradeFieldOfStudy>();
   public IReadOnlyCollection<GradeFieldOfStudy> GradeFields => _gradeFields.AsReadOnly();
-  
-  protected GradeOfStudy(){}
-  
-  // Constructor to initialize the entity
-  public GradeOfStudy(Guid id, string title)
-  {
-    Id = id;
-    Title = title;
-  }
 
   // Method to change the title
   public void ChangeTitle(string newTitle)
@@ -30,6 +30,7 @@ public class GradeOfStudy
     {
       throw new ArgumentException("Title cannot be empty or whitespace.", nameof(newTitle));
     }
+
     Title = newTitle;
   }
 
@@ -40,6 +41,7 @@ public class GradeOfStudy
     {
       throw new ArgumentNullException(nameof(userAcademicYear));
     }
+
     _academicYears.Add(userAcademicYear);
   }
 
@@ -50,6 +52,7 @@ public class GradeOfStudy
     {
       throw new ArgumentNullException(nameof(userAcademicYear));
     }
+
     _academicYears.Remove(userAcademicYear);
   }
 }

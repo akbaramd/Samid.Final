@@ -2,7 +2,11 @@
 using FastEndpoints;
 using FastEndpoints.Security;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Samid.Application.DTOs.Authentication;
+using Samid.Domain.Entities;
+
+namespace Samid.Api.Endpoints.Auth;
 
 public class AuthVerifyCodeEndpoint : Endpoint<AuthVerifyCodeRequest, AuthResponse>
 {
@@ -25,7 +29,16 @@ public class AuthVerifyCodeEndpoint : Endpoint<AuthVerifyCodeRequest, AuthRespon
 
   public override async Task HandleAsync(AuthVerifyCodeRequest req, CancellationToken ct)
   {
-    var user = await _userManager.FindByNameAsync(req.PhoneNumber);
+    var user = await _userManager.Users
+      .Include(x => x.UserAcademicYears)
+      .ThenInclude(x => x.AcademicYear)
+      .Include(x => x.UserAcademicYears)
+      .ThenInclude(x => x.GradeFieldOfStudy)
+      .ThenInclude(x => x.FieldOfStudy)
+      .Include(x => x.UserAcademicYears)
+      .ThenInclude(x => x.GradeFieldOfStudy)
+      .ThenInclude(x => x.GradeOfStudy).FirstOrDefaultAsync(x => x.UserName != null && x.UserName.Equals(req.PhoneNumber), cancellationToken: ct);
+    
     if (user == null)
     {
       ThrowError("User not found.");

@@ -3,6 +3,8 @@ using System.Text.Json;
 using Samid.Domain.Exceptions;
 using ApplicationException = Samid.Application.Exceptions.ApplicationException;
 
+namespace Samid.Api.Middlewares;
+
 public class ExceptionHandlingMiddleware
 {
   private readonly ILogger<ExceptionHandlingMiddleware> _logger;

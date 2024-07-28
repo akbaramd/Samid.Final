@@ -1,29 +1,27 @@
 ﻿using FastEndpoints;
 using FluentValidation;
-using Samid.Application.DTOs.Authentication;
 
-namespace Samid.Application.DTOs.Authentication
+namespace Samid.Application.DTOs.Authentication;
+
+public class AuthSendCodeRequest
 {
-  public class AuthSendCodeRequest
+  private string phoneNumber = string.Empty;
+
+  public string PhoneNumber
   {
-    private string phoneNumber = string.Empty;
+    get => phoneNumber;
+    set => phoneNumber = NormalizePhoneNumber(value);
+  }
 
-    public string PhoneNumber
+  private string NormalizePhoneNumber(string phoneNumber)
+  {
+    // Remove the + sign if it exists
+    if (phoneNumber.StartsWith("+"))
     {
-      get => phoneNumber;
-      set => phoneNumber = NormalizePhoneNumber(value);
+      phoneNumber = phoneNumber.Substring(1);
     }
 
-    private string NormalizePhoneNumber(string phoneNumber)
-    {
-      // Remove the + sign if it exists
-      if (phoneNumber.StartsWith("+"))
-      {
-        phoneNumber = phoneNumber.Substring(1);
-      }
-
-      return phoneNumber;
-    }
+    return phoneNumber;
   }
 }
 

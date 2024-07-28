@@ -3,14 +3,15 @@ using FastEndpoints.Security;
 using FastEndpoints.Swagger;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Samid.Api.Middlewares;
+using Samid.Domain.Entities;
+using Samid.Infrastructure.Mappings;
 using Samid.Infrastructure.Persistence;
-using Samid.Inrastructure.Mappings;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
   options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -39,19 +40,14 @@ builder.Services.SwaggerDocument(o =>
 });
 
 
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-  app.MapOpenApi();
   app.UseSwaggerGen();
   app.UseSwaggerUi(s =>
   {
     s.ConfigureDefaults();
   });
-}
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
@@ -67,8 +63,10 @@ using (var scope = app.Services.CreateScope())
 {
   var services = scope.ServiceProvider;
   var context = services.GetRequiredService<ApplicationDbContext>();
+  context.Database.Migrate();
+
   var user = services.GetRequiredService<UserManager<User>>();
-  ApplicationDbContextSeed.Seed(context,user);
+  ApplicationDbContextSeed.Seed(context, user);
 }
 
 app.Run();

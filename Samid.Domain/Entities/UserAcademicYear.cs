@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Globalization;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Samid.Domain.Entities;
 
@@ -10,13 +7,8 @@ public class UserAcademicYear
 {
   private UserAcademicYear() { } // سازنده بدون پارامتر عمومی
 
-  public UserAcademicYear(Guid userId, Guid gradeFieldOfStudy , Guid academicYearId)
+  public UserAcademicYear(Guid userId, Guid gradeFieldOfStudy, Guid academicYearId)
   {
-    if (gradeFieldOfStudy == null)
-    {
-      throw new ArgumentNullException(nameof(gradeFieldOfStudy), "رشته تحصیلی نمی‌تواند خالی باشد.");
-    }
-
     UserId = userId;
     GradeFieldOfStudyId = gradeFieldOfStudy;
     AcademicYearId = academicYearId;
@@ -32,9 +24,8 @@ public class UserAcademicYear
   [Required] public Guid GradeFieldOfStudyId { get; private set; } // کلید خارجی
 
   public GradeFieldOfStudy GradeFieldOfStudy { get; private set; } = default!; // خاصیت ناوبری
-  
-  [Required] public Guid AcademicYearId { get; private set; } // کلید خارجی
-  
-    public AcademicYear AcademicYear { get; private set; } = default!; // خاصیت ناوبری
 
+  [Required] public Guid AcademicYearId { get; private set; } // کلید خارجی
+
+  public AcademicYear AcademicYear { get; private set; } = default!; // خاصیت ناوبری
 }

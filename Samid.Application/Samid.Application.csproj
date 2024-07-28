@@ -1,12 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net9.0</TargetFramework>
+        <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
     <ItemGroup>
+        <Folder Include="DTOs\Users\"/>
         <Folder Include="Services\"/>
         <Folder Include="UseCases\"/>
     </ItemGroup>
@@ -14,7 +15,7 @@
     <ItemGroup>
         <PackageReference Include="AutoMapper" Version="13.0.1"/>
         <PackageReference Include="FastEndpoints.Security" Version="5.27.0.13-beta"/>
-        <PackageReference Include="Microsoft.Extensions.Identity.Core" Version="9.0.0-preview.6.24328.4"/>
+        <PackageReference Include="Microsoft.Extensions.Identity.Core" Version="8.0.7"/>
     </ItemGroup>
 
     <ItemGroup>

@@ -1,13 +1,19 @@
 ﻿using AutoMapper;
-using Samid.Application.DTOs.Authentication;
+using Samid.Application.DTOs;
+using Samid.Domain.Entities;
 
-namespace Samid.Inrastructure.Mappings;
+namespace Samid.Infrastructure.Mappings;
 
 public class MappingProfile : Profile
 {
   public MappingProfile()
   {
-    CreateMap<User, AuthUserProfileResponse>()
-      .ForMember(x => x.UserId, b => b.MapFrom(x => x.Id));
+    CreateMap<User, UserDto>()
+      .ForMember(x => x.UserAcademicYears, v => v.MapFrom(b => b.UserAcademicYears));
+    CreateMap<UserAcademicYear, UserAcademicYearDto>();
+    CreateMap<AcademicYear, AcademicYearDto>();
+    CreateMap<GradeFieldOfStudy, GradeFieldOfStudyDto>();
+    CreateMap<GradeOfStudy, GradeOfStudyDto>();
+    CreateMap<FieldOfStudy, FieldOfStudyDto>();
   }
 }
