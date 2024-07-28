@@ -8,47 +8,17 @@ namespace Samid.Domain.Entities;
 // Entity for AcademicYear
 public class AcademicYear
 {
-  private AcademicYear() { } // سازنده بدون پارامتر عمومی
 
-  public AcademicYear(User user, FieldOfStudy fieldOfStudy, GradeOfStudy grade)
+  public AcademicYear()
   {
-    if (fieldOfStudy == null)
-    {
-      throw new ArgumentNullException(nameof(fieldOfStudy), "رشته تحصیلی نمی‌تواند خالی باشد.");
-    }
-
-    if (grade == null)
-    {
-      throw new ArgumentNullException(nameof(grade), "پایه تحصیلی نمی‌تواند خالی باشد.");
-    }
-
-    User = user ?? throw new ArgumentNullException(nameof(user), "کاربر نمی‌تواند خالی باشد.");
-    UserId = user.Id;
-
     StartDate = GetStartOfAcademicYear();
     EndDate = GetEndOfAcademicYear();
     Title = GenerateAcademicYearTitle(StartDate, EndDate);
-    Field = fieldOfStudy;
-    FieldOfStudyId = fieldOfStudy.Id;
-    Grade = grade;
-    GradeOfStudyId = grade.Id;
   }
 
   [Key] public Guid Id { get; set; } // کلید اصلی
 
   [Required] public string Title { get; private set; } = string.Empty;
-
-  [Required] public Guid UserId { get; private set; } // کلید خارجی
-
-  public User User { get; private set; } = default!; // خاصیت ناوبری
-
-  [Required] public Guid FieldOfStudyId { get; private set; } // کلید خارجی
-
-  public FieldOfStudy Field { get; private set; } = default!; // خاصیت ناوبری
-
-  [Required] public Guid GradeOfStudyId { get; private set; } // کلید خارجی
-
-  public GradeOfStudy Grade { get; private set; } = default!; // خاصیت ناوبری
 
   [Required] public DateTime StartDate { get; private set; }
 

@@ -8,7 +8,7 @@ public class User : IdentityUser<Guid>
     // Parameterless constructor for EF Core
     public User() 
     {
-        AcademicYears = new List<AcademicYear>();
+        UserAcademicYears = new List<UserAcademicYear>();
     }
 
     // Public constructor for use in application code
@@ -32,7 +32,7 @@ public class User : IdentityUser<Guid>
     public int VerificationFailures { get; private set; }
     public DateTime? LastVerificationFailure { get; private set; }
 
-    public ICollection<AcademicYear> AcademicYears { get; private set; }
+    public  ICollection<UserAcademicYear> UserAcademicYears { get; private set; }
 
     // Domain methods
     public void UpdateName(string firstName, string lastName)

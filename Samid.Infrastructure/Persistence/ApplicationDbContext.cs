@@ -7,6 +7,7 @@ namespace Samid.Infrastructure.Persistence;
 
 public class ApplicationDbContext : IdentityDbContext<User, IdentityRole<Guid>, Guid>
 {
+  public DbSet<UserAcademicYear> UserAcademicYears { get; set; }
   public DbSet<AcademicYear> AcademicYears { get; set; }
   public DbSet<GradeOfStudy> GradeOfStudies { get; set; }
   public DbSet<FieldOfStudy> FieldOfStudies { get; set; }
@@ -15,24 +16,14 @@ public class ApplicationDbContext : IdentityDbContext<User, IdentityRole<Guid>, 
   public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
     : base(options)
   {
+    
   }
 
   protected override void OnModelCreating(ModelBuilder builder)
   {
     base.OnModelCreating(builder);
 
-    builder.Entity<GradeFieldOfStudy>()
-      .HasKey(gfs => new { gfs.GradeOfStudyId, gfs.FieldOfStudyId });
-
-    builder.Entity<GradeFieldOfStudy>()
-      .HasOne(gfs => gfs.GradeOfStudy)
-      .WithMany(g => g.GradeFields)
-      .HasForeignKey(gfs => gfs.GradeOfStudyId);
-
-    builder.Entity<GradeFieldOfStudy>()
-      .HasOne(gfs => gfs.FieldOfStudy)
-      .WithMany(f => f.GradeFields)
-      .HasForeignKey(gfs => gfs.FieldOfStudyId);
-
+    builder.Entity<User>().HasMany(x => x.UserAcademicYears).WithOne(x => x.User).HasForeignKey(x => x.UserId);
+   
   }
 }

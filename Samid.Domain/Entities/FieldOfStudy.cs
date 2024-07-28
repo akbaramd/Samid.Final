@@ -4,7 +4,7 @@
     {
         // Private fields for encapsulation
         private readonly List<FieldOfStudy> _childs = new List<FieldOfStudy>();
-        private readonly List<AcademicYear> _academicYears = new List<AcademicYear>();
+        private readonly List<UserAcademicYear> _academicYears = new List<UserAcademicYear>();
 
         // Properties with private setters to ensure encapsulation
         public Guid Id { get; private set; }
@@ -14,7 +14,7 @@
 
         // Readonly collections to expose children and academic years
         public IReadOnlyCollection<FieldOfStudy> Childs => _childs.AsReadOnly();
-        public IReadOnlyCollection<AcademicYear> AcademicYears => _academicYears.AsReadOnly();
+        public IReadOnlyCollection<UserAcademicYear> AcademicYears => _academicYears.AsReadOnly();
 
         private readonly List<GradeFieldOfStudy> _gradeFields = new List<GradeFieldOfStudy>();
         public IReadOnlyCollection<GradeFieldOfStudy> GradeFields => _gradeFields.AsReadOnly();
@@ -80,29 +80,29 @@
         }
 
         // Method to add an academic year
-        public void AddAcademicYear(AcademicYear academicYear)
+        public void AddAcademicYear(UserAcademicYear userAcademicYear)
         {
-            if (academicYear == null)
+            if (userAcademicYear == null)
             {
-                throw new ArgumentNullException(nameof(academicYear));
+                throw new ArgumentNullException(nameof(userAcademicYear));
             }
 
-            if (_academicYears.Any(ay => ay.Id == academicYear.Id))
+            if (_academicYears.Any(ay => ay.Id == userAcademicYear.Id))
             {
                 throw new InvalidOperationException("Academic year already exists.");
             }
 
-            _academicYears.Add(academicYear);
+            _academicYears.Add(userAcademicYear);
         }
 
         // Method to remove an academic year
-        public void RemoveAcademicYear(AcademicYear academicYear)
+        public void RemoveAcademicYear(UserAcademicYear userAcademicYear)
         {
-            if (academicYear == null)
+            if (userAcademicYear == null)
             {
-                throw new ArgumentNullException(nameof(academicYear));
+                throw new ArgumentNullException(nameof(userAcademicYear));
             }
 
-            _academicYears.Remove(academicYear);
+            _academicYears.Remove(userAcademicYear);
         }
     }

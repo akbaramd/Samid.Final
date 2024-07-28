@@ -1,7 +1,12 @@
-﻿namespace Samid.Domain.Entities;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Samid.Domain.Entities;
 
 public class GradeFieldOfStudy
 {
+  [Key]
+  public Guid Id { get; set; }
+  public string Title { get; set; } = string.Empty!;
   public Guid GradeOfStudyId { get; private set; }
   public GradeOfStudy GradeOfStudy { get; private set; } = default!;
 
@@ -10,8 +15,9 @@ public class GradeFieldOfStudy
 
   protected GradeFieldOfStudy() {}
   
-  public GradeFieldOfStudy(Guid gradeOfStudyId, GradeOfStudy gradeOfStudy, Guid fieldOfStudyId, FieldOfStudy fieldOfStudy)
+  public GradeFieldOfStudy(string title,Guid gradeOfStudyId, GradeOfStudy gradeOfStudy, Guid fieldOfStudyId, FieldOfStudy fieldOfStudy)
   {
+    Title = title;
     GradeOfStudyId = gradeOfStudyId;
     GradeOfStudy = gradeOfStudy ?? throw new ArgumentNullException(nameof(gradeOfStudy));
     FieldOfStudyId = fieldOfStudyId;

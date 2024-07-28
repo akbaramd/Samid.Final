@@ -3,14 +3,14 @@
 public class GradeOfStudy
 {
   // Private fields for encapsulation
-  private readonly List<AcademicYear> _academicYears = new List<AcademicYear>();
+  private readonly List<UserAcademicYear> _academicYears = new List<UserAcademicYear>();
 
   // Properties with private setters to ensure encapsulation
   public Guid Id { get; private set; }
   public string Title { get; private set; } = default!;
 
   // Readonly collection to expose academic years
-  public IReadOnlyCollection<AcademicYear> AcademicYears => _academicYears.AsReadOnly();
+  public IReadOnlyCollection<UserAcademicYear> AcademicYears => _academicYears.AsReadOnly();
   private readonly List<GradeFieldOfStudy> _gradeFields = new List<GradeFieldOfStudy>();
   public IReadOnlyCollection<GradeFieldOfStudy> GradeFields => _gradeFields.AsReadOnly();
   
@@ -34,22 +34,22 @@ public class GradeOfStudy
   }
 
   // Method to add an academic year
-  public void AddAcademicYear(AcademicYear academicYear)
+  public void AddAcademicYear(UserAcademicYear userAcademicYear)
   {
-    if (academicYear == null)
+    if (userAcademicYear == null)
     {
-      throw new ArgumentNullException(nameof(academicYear));
+      throw new ArgumentNullException(nameof(userAcademicYear));
     }
-    _academicYears.Add(academicYear);
+    _academicYears.Add(userAcademicYear);
   }
 
   // Method to remove an academic year
-  public void RemoveAcademicYear(AcademicYear academicYear)
+  public void RemoveAcademicYear(UserAcademicYear userAcademicYear)
   {
-    if (academicYear == null)
+    if (userAcademicYear == null)
     {
-      throw new ArgumentNullException(nameof(academicYear));
+      throw new ArgumentNullException(nameof(userAcademicYear));
     }
-    _academicYears.Remove(academicYear);
+    _academicYears.Remove(userAcademicYear);
   }
 }

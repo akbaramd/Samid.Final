@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using Microsoft.AspNetCore.Identity;
 using Samid.Domain.Entities;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -7,7 +8,7 @@ namespace Samid.Infrastructure.Persistence
 {
     public static class ApplicationDbContextSeed
     {
-        public static void Seed(ApplicationDbContext context)
+        public static void Seed(ApplicationDbContext context, UserManager<User> userManager)
         {
             if (!context.GradeOfStudies.Any())
             {
@@ -73,7 +74,7 @@ namespace Samid.Infrastructure.Persistence
 
                 foreach (var grade in generalGrades)
                 {
-                    var gradeField = new GradeFieldOfStudy(grade.Id, grade, generalField.Id, generalField);
+                    var gradeField = new GradeFieldOfStudy(grade.Title, grade.Id, grade, generalField.Id, generalField);
                     context.GradeFieldOfStudies.Add(gradeField);
                 }
 
@@ -83,19 +84,95 @@ namespace Samid.Infrastructure.Persistence
                     .ToList();
 
                 var specializedFields = context.FieldOfStudies
-                    .Where(f => (f.ParentId == null || f.ParentId == Guid.Empty) && f.Title != "عمومی")
+                    .Where(f => f.ParentId == null && f.Title != "عمومی")
                     .ToList();
 
                 foreach (var grade in specializedGrades)
                 {
                     foreach (var field in specializedFields)
                     {
-                        var gradeField = new GradeFieldOfStudy(grade.Id, grade, field.Id, field);
+                        var gradeField = new GradeFieldOfStudy($"{grade.Title} {field.Title}", grade.Id, grade, field.Id, field);
                         context.GradeFieldOfStudies.Add(gradeField);
                     }
                 }
 
                 context.SaveChanges();
+            }
+
+            // Add or update the user Akbar Ahmadi
+            var user = userManager.FindByNameAsync("akbar.ahmadi@example.com").Result;
+            if (user == null)
+            {
+                user = new User("Akbar", "Ahmadi", new DateTime(1996, 9, 8))
+                {
+                    UserName = "akbar.ahmadi@example.com",
+                    Email = "akbar.ahmadi@example.com",
+                    PhoneNumber = "09371770774"
+                };
+
+                var result = userManager.CreateAsync(user, "SecurePassword123!").Result;
+
+                if (result.Succeeded)
+                {
+                    // Optionally add the user to a role
+                    // userManager.AddToRoleAsync(user, "UserRole").Wait();
+                }
+            }
+            else
+            {
+                // Update user properties if they have changed
+                bool isUpdated = false;
+
+                if (user.FirstName != "Akbar")
+                {
+                    user.UpdateName("Akbar", user.LastName);
+                    isUpdated = true;
+                }
+                if (user.LastName != "Ahmadi")
+                {
+                    user.UpdateName(user.FirstName, "Ahmadi");
+                    isUpdated = true;
+                }
+                if (user.BirthDate != new DateTime(1996, 9, 8))
+                {
+                    user.UpdateBirthDate(new DateTime(1996, 9, 8));
+                    isUpdated = true;
+                }
+                if (user.PhoneNumber != "09371770774")
+                {
+                    user.PhoneNumber = "09371770774";
+                    isUpdated = true;
+                }
+
+                if (isUpdated)
+                {
+                    var result = userManager.UpdateAsync(user).Result;
+                }
+            }
+
+            // Create AcademicYear for کنکور تجربی
+            var konkoorTajrobi = context.GradeFieldOfStudies
+                .FirstOrDefault(gfs => gfs.Title == "کنکور علوم تجربی");
+
+            var academicYear = context.AcademicYears.FirstOrDefault(x => x.StartDate <= DateTime.Now && x.EndDate >= DateTime.Now);
+
+            if (academicYear is null)
+            {
+                academicYear = (context.AcademicYears.Add(new AcademicYear()).Entity);
+                context.SaveChanges();
+            }
+            
+            if (konkoorTajrobi != null)
+            {
+                var academicYearExists = context.UserAcademicYears
+                    .Any(ay => ay.UserId == user.Id && ay.GradeFieldOfStudyId == konkoorTajrobi.Id);
+
+                if (!academicYearExists)
+                {   
+                    var userAcademicYear = new UserAcademicYear(user.Id, konkoorTajrobi.Id,academicYear.Id);
+                    context.UserAcademicYears.Add(userAcademicYear);
+                    context.SaveChanges();
+                }
             }
         }
     }

@@ -2,18 +2,17 @@
 using FastEndpoints;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Samid.Application.DTOs.Authentication;
 
 [Authorize]
 public class AuthGetUserProfileEndpoint : EndpointWithoutRequest<AuthUserProfileResponse, AuthGetUserProfileMapper>
 {
-  private readonly IMapper _mapper;
   private readonly UserManager<User> _userManager;
 
-  public AuthGetUserProfileEndpoint(UserManager<User> userManager, IMapper mapper)
+  public AuthGetUserProfileEndpoint(UserManager<User> userManager)
   {
     _userManager = userManager;
-    _mapper = mapper;
   }
 
   public override void Configure()
@@ -26,7 +25,11 @@ public class AuthGetUserProfileEndpoint : EndpointWithoutRequest<AuthUserProfile
     var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
     if (userId != null)
     {
-      var user = await _userManager.FindByIdAsync(userId);
+      var user = await _userManager.Users
+        .Include(x=>x.UserAcademicYears)
+        .ThenInclude(x=>x.AcademicYear)
+        .Include(x=>x.UserAcademicYears)
+        .ThenInclude(x=>x.GradeFieldOfStudy).FirstOrDefaultAsync(x =>x.Id == Guid.Parse(userId), cancellationToken: ct);
       if (user == null)
       {
         await SendNotFoundAsync(ct);
@@ -41,7 +44,7 @@ public class AuthGetUserProfileEndpoint : EndpointWithoutRequest<AuthUserProfile
 
 public class AuthGetUserProfileMapper : ResponseMapper<AuthUserProfileResponse, User>
 {
-  public override AuthUserProfileResponse FromEntity(User user)
+  public override async Task<AuthUserProfileResponse> FromEntityAsync(User user,CancellationToken ct)
   {
     return new AuthUserProfileResponse
     {
@@ -50,7 +53,15 @@ public class AuthGetUserProfileMapper : ResponseMapper<AuthUserProfileResponse, 
       PhoneNumber = user.PhoneNumber,
       FirstName = user.FirstName,
       LastName = user.LastName,
-      BirthDate = user.BirthDate
+      BirthDate = user.BirthDate,
+      UserAcademicYears = user.UserAcademicYears.Select(x => new AuthUserProfileResponse.AuthUserProfileAcademicYearsResponse()
+      {
+        GradeFieldOfStudyId = x.GradeFieldOfStudyId,
+        GradeFieldOfStudyTitle = x.GradeFieldOfStudy.Title,
+        AcademicYearId = x.AcademicYearId,
+        AcademicYearTitle = x.AcademicYear.Title,
+        Id = x.Id
+      }).ToList()
     };
   }
 }
