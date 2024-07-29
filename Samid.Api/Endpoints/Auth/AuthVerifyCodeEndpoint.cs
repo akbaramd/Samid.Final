@@ -30,15 +30,16 @@ public class AuthVerifyCodeEndpoint : Endpoint<AuthVerifyCodeRequest, AuthRespon
   public override async Task HandleAsync(AuthVerifyCodeRequest req, CancellationToken ct)
   {
     var user = await _userManager.Users
-      .Include(x => x.UserAcademicYears)
+      .Include(x => x.UserStudyMajors)
       .ThenInclude(x => x.AcademicYear)
-      .Include(x => x.UserAcademicYears)
-      .ThenInclude(x => x.GradeFieldOfStudy)
-      .ThenInclude(x => x.FieldOfStudy)
-      .Include(x => x.UserAcademicYears)
-      .ThenInclude(x => x.GradeFieldOfStudy)
-      .ThenInclude(x => x.GradeOfStudy).FirstOrDefaultAsync(x => x.UserName != null && x.UserName.Equals(req.PhoneNumber), cancellationToken: ct);
-    
+      .Include(x => x.UserStudyMajors)
+      .ThenInclude(x => x.StudyMajors)
+      .ThenInclude(x => x.StudyField)
+      .Include(x => x.UserStudyMajors)
+      .ThenInclude(x => x.StudyMajors)
+      .ThenInclude(x => x.StudyGrade)
+      .FirstOrDefaultAsync(x => x.UserName != null && x.UserName.Equals(req.PhoneNumber), ct);
+
     if (user == null)
     {
       ThrowError("User not found.");

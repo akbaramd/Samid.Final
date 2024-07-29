@@ -33,14 +33,17 @@ public class AuthGetUserProfileEndpoint : EndpointWithoutRequest<AuthUserProfile
     if (userId != null)
     {
       var user = await _userManager.Users
-        .Include(x => x.UserAcademicYears)
+        .Include(x => x.UserStudyMajors)
         .ThenInclude(x => x.AcademicYear)
-        .Include(x => x.UserAcademicYears)
-        .ThenInclude(x => x.GradeFieldOfStudy)
-        .ThenInclude(x => x.FieldOfStudy)
-        .Include(x => x.UserAcademicYears)
-        .ThenInclude(x => x.GradeFieldOfStudy)
-        .ThenInclude(x => x.GradeOfStudy)
+        .Include(x => x.UserStudyMajors)
+        .ThenInclude(x => x.StudyMajors)
+        .ThenInclude(x => x.StudyField)
+        .Include(x => x.UserStudyMajors)
+        .ThenInclude(x => x.StudyMajors)
+        .ThenInclude(x => x.StudyGrade)
+        .Include(x => x.UserStudyMajors)
+        .ThenInclude(x => x.StudyMajors)
+        .ThenInclude(x => x.StudyBooks)
         .FirstOrDefaultAsync(x => x.Id == Guid.Parse(userId), ct);
       if (user == null)
       {
@@ -48,6 +51,7 @@ public class AuthGetUserProfileEndpoint : EndpointWithoutRequest<AuthUserProfile
         return;
       }
 
+      
       await SendAsync(new AuthUserProfileResponse { User = _mapper.Map<UserDto>(user) }, cancellation: ct);
     }
   }

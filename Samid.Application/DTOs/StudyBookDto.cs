@@ -1,8 +1,8 @@
 ﻿namespace Samid.Application.DTOs;
 
-public class FieldOfStudyDto
+public class StudyBookDto
 {
   public Guid Id { get; set; }
   public string Title { get; set; } = default!;
-  public FieldOfStudyDto? Parent { get; set; }
+  public string Code { get; set; } = default!;
 }

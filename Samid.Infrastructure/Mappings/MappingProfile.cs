@@ -9,11 +9,12 @@ public class MappingProfile : Profile
   public MappingProfile()
   {
     CreateMap<User, UserDto>()
-      .ForMember(x => x.UserAcademicYears, v => v.MapFrom(b => b.UserAcademicYears));
-    CreateMap<UserAcademicYear, UserAcademicYearDto>();
+      .ForMember(x => x.UserStudyMajors, v => v.MapFrom(b => b.UserStudyMajors));
+    CreateMap<UserStudyMajors, UserStudyMajorsDto>();
     CreateMap<AcademicYear, AcademicYearDto>();
-    CreateMap<GradeFieldOfStudy, GradeFieldOfStudyDto>();
-    CreateMap<GradeOfStudy, GradeOfStudyDto>();
-    CreateMap<FieldOfStudy, FieldOfStudyDto>();
+    CreateMap<StudyMajors, StudyMajorsDto>();
+    CreateMap<StudyGrade, StudyGradeDto>();
+    CreateMap<StudyField, StudyFieldDto>();
+    CreateMap<StudyBook, StudyBookDto>();
   }
 }
