@@ -2,14 +2,14 @@
 
 namespace Samid.Domain.Entities
 {
-  public class UserStudyMajors
+  public class UserEducationMajors
   {
-    private UserStudyMajors() { }
+    private UserEducationMajors() { }
 
-    public UserStudyMajors(Guid userId, Guid majorGradeId, Guid academicYearId)
+    public UserEducationMajors(Guid userId, Guid majorGradeId, Guid academicYearId)
     {
       UserId = userId;
-      StudyMajorsId = majorGradeId;
+      EducationMajorsId = majorGradeId;
       AcademicYearId = academicYearId;
     }
 
@@ -21,8 +21,8 @@ namespace Samid.Domain.Entities
     public User User { get; private set; } = default!;
 
     [Required]
-    public Guid  StudyMajorsId { get; private set; }
-    public StudyMajors StudyMajors { get; private set; } = default!;
+    public Guid  EducationMajorsId { get; private set; }
+    public EducationMajors EducationMajors { get; private set; } = default!;
 
     [Required]
     public Guid AcademicYearId { get; private set; }

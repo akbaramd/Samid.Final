@@ -14,57 +14,58 @@ namespace Samid.Infrastructure.Persistence
         {
         }
 
-        public DbSet<UserStudyMajors> UserStudyMajors { get; set; }
+        public DbSet<UserEducationMajors> UserEducationMajors { get; set; }
         public DbSet<AcademicYear> AcademicYears { get; set; }
-        public DbSet<StudyGrade> StudyGrades { get; set; }
-        public DbSet<StudyField> StudyFields { get; set; }
-        public DbSet<StudyStage> StudyStages { get; set; }
-        public DbSet<StudyMajors> StudyMajors { get; set; }
-        public DbSet<StudyBook> StudyBooks { get; set; }
+        public DbSet<EducationGrade> EducationGrades { get; set; }
+        public DbSet<EducationField> EducationFields { get; set; }
+        public DbSet<EducationStage> EducationStages { get; set; }
+        public DbSet<EducationMajors> EducationMajors { get; set; }
+        public DbSet<EducationBook> EducationBooks { get; set; }
+        public DbSet<StudyActivity> StudyActivities { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
 
             builder.Entity<User>()
-                .HasMany(x => x.UserStudyMajors)
+                .HasMany(x => x.UserEducationMajors)
                 .WithOne(x => x.User)
                 .HasForeignKey(x => x.UserId);
 
-            builder.Entity<StudyMajors>()
-              .HasMany(sm => sm.StudyBooks)
-              .WithMany(b => b.StudyMajors)
+            builder.Entity<EducationMajors>()
+              .HasMany(sm => sm.EducationBooks)
+              .WithMany(b => b.EducationMajors)
               .UsingEntity<Dictionary<string, object>>(
-                "StudyMajorsBook",
+                "EducationMajorsBook",
                 j => j
-                  .HasOne<StudyBook>()
+                  .HasOne<EducationBook>()
                   .WithMany()
-                  .HasForeignKey("StudyBookId")
-                  .HasConstraintName("FK_StudyMajorsBook_StudyBookId")
+                  .HasForeignKey("EducationBookId")
+                  .HasConstraintName("FK_EducationMajorsBook_EducationBookId")
                   .OnDelete(DeleteBehavior.Cascade),
                 j => j
-                  .HasOne<StudyMajors>()
+                  .HasOne<EducationMajors>()
                   .WithMany()
-                  .HasForeignKey("StudyMajorsId")
-                  .HasConstraintName("FK_StudyMajorsBook_StudyMajorsId")
+                  .HasForeignKey("EducationMajorsId")
+                  .HasConstraintName("FK_EducationMajorsBook_EducationMajorsId")
                   .OnDelete(DeleteBehavior.Cascade));
 
-            builder.Entity<StudyGrade>()
-                .HasMany(sg => sg.StudyFields)
-                .WithMany(sf => sf.StudyGrades)
+            builder.Entity<EducationGrade>()
+                .HasMany(sg => sg.EducationFields)
+                .WithMany(sf => sf.EducationGrades)
                 .UsingEntity<Dictionary<string, object>>(
-                    "StudyGradeField",
+                    "EducationGradeField",
                     j => j
-                        .HasOne<StudyField>()
+                        .HasOne<EducationField>()
                         .WithMany()
-                        .HasForeignKey("StudyFieldId")
-                        .HasConstraintName("FK_StudyGradeField_StudyFieldId")
+                        .HasForeignKey("EducationFieldId")
+                        .HasConstraintName("FK_EducationGradeField_EducationFieldId")
                         .OnDelete(DeleteBehavior.Cascade),
                     j => j
-                        .HasOne<StudyGrade>()
+                        .HasOne<EducationGrade>()
                         .WithMany()
-                        .HasForeignKey("StudyGradeId")
-                        .HasConstraintName("FK_StudyGradeField_StudyGradeId")
+                        .HasForeignKey("EducationGradeId")
+                        .HasConstraintName("FK_EducationGradeField_EducationGradeId")
                         .OnDelete(DeleteBehavior.Cascade));
         }
     }

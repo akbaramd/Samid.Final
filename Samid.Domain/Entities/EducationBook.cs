@@ -3,9 +3,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Samid.Domain.Entities
 {
-  public class StudyBook
+  public class EducationBook
   {
-    public StudyBook(Guid id, string title, string code)
+    public EducationBook(Guid id, string title, string code)
     {
       Id = id;
       Title = title;
@@ -19,26 +19,26 @@ namespace Samid.Domain.Entities
     public string Code { get; set; } = default!;
 
 
-    public ICollection<StudyMajors> StudyMajors { get; set; } = new List<StudyMajors>();
+    public ICollection<EducationMajors> EducationMajors { get; set; } = new List<EducationMajors>();
 
-    public void AddField(StudyMajors field)
+    public void AddField(EducationMajors field)
     {
       if (field == null)
       {
         throw new ArgumentNullException(nameof(field));
       }
 
-      StudyMajors.Add(field);
+      EducationMajors.Add(field);
     }
 
-    public void RemoveField(StudyMajors field)
+    public void RemoveField(EducationMajors field)
     {
       if (field == null)
       {
         throw new ArgumentNullException(nameof(field));
       }
 
-      StudyMajors.Remove(field);
+      EducationMajors.Remove(field);
     }
   }
 }

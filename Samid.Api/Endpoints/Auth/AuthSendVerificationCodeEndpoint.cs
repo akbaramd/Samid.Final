@@ -5,18 +5,12 @@ using Samid.Domain.Entities;
 
 namespace Samid.Api.Endpoints.Auth;
 
-public class AuthSendVerificationCodeEndpoint : Endpoint<AuthSendCodeRequest>
+public class AuthSendVerificationCodeEndpoint(
+  UserManager<User> userManager,
+  ILogger<AuthSendVerificationCodeEndpoint> logger)
+  : Endpoint<AuthSendCodeRequest>
 {
-  private readonly ILogger<AuthSendVerificationCodeEndpoint> _logger;
   private readonly Random _random = new();
-  private readonly UserManager<User> _userManager;
-
-  public AuthSendVerificationCodeEndpoint(UserManager<User> userManager,
-    ILogger<AuthSendVerificationCodeEndpoint> logger)
-  {
-    _userManager = userManager;
-    _logger = logger;
-  }
 
   public override void Configure()
   {
@@ -28,14 +22,14 @@ public class AuthSendVerificationCodeEndpoint : Endpoint<AuthSendCodeRequest>
 
   public override async Task HandleAsync(AuthSendCodeRequest req, CancellationToken ct)
   {
-    var user = await _userManager.FindByNameAsync(req.PhoneNumber);
+    var user = await userManager.FindByNameAsync(req.PhoneNumber);
     if (user == null)
     {
       user = new User { UserName = req.PhoneNumber, PhoneNumber = req.PhoneNumber };
-      var createResult = await _userManager.CreateAsync(user);
+      var createResult = await userManager.CreateAsync(user);
       if (!createResult.Succeeded)
       {
-        _logger.LogError("Failed to create user: {Errors}", createResult.Errors);
+        logger.LogError("Failed to create user: {Errors}", createResult.Errors);
         ThrowError("Failed to create user.");
         return;
       }
@@ -57,15 +51,15 @@ public class AuthSendVerificationCodeEndpoint : Endpoint<AuthSendCodeRequest>
     }
 
     user.IncrementVerificationAttempts();
-    await _userManager.UpdateAsync(user);
+    await userManager.UpdateAsync(user);
 
     // var code = _random.Next(100000, 999999).ToString();
     var code = "123456";
-    _logger.LogInformation("Generated verification code: {Code}", code);
+    logger.LogInformation("Generated verification code: {Code}", code);
 
     // Here, you should send the code via SMS to the user's phone number
     // For demonstration, we'll assume the SMS sending is successful
-    await _userManager.SetAuthenticationTokenAsync(user, "Phone", "VerificationCode", code);
+    await userManager.SetAuthenticationTokenAsync(user, "Phone", "VerificationCode", code);
 
     await SendOkAsync(ct);
   }

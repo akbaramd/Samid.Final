@@ -7,7 +7,7 @@ public class User : IdentityUser<Guid>
   // Parameterless constructor for EF Core
   public User()
   {
-    UserStudyMajors = new List<UserStudyMajors>();
+    UserEducationMajors = new List<UserEducationMajors>();
   }
 
   // Public constructor for use in application code
@@ -31,7 +31,7 @@ public class User : IdentityUser<Guid>
   public int VerificationFailures { get; private set; }
   public DateTime? LastVerificationFailure { get; private set; }
 
-  public ICollection<UserStudyMajors> UserStudyMajors { get; private set; }
+  public ICollection<UserEducationMajors> UserEducationMajors { get; private set; }
 
   // Domain methods
   public void UpdateName(string firstName, string lastName)
@@ -48,7 +48,7 @@ public class User : IdentityUser<Guid>
   // Method to check if the profile is complete
   public bool IsProfileComplete()
   {
-    return !string.IsNullOrEmpty(FirstName) && !string.IsNullOrEmpty(LastName) && BirthDate != default && UserStudyMajors.Count != 0 && UserStudyMajors.Any(x=>x.AcademicYear.IsCurrentAcademicYear(DateTime.Now));
+    return !string.IsNullOrEmpty(FirstName) && !string.IsNullOrEmpty(LastName) && BirthDate != default && UserEducationMajors.Count != 0 && UserEducationMajors.Any(x=>x.AcademicYear.IsCurrentAcademicYear(DateTime.UtcNow));
   }
 
   // Methods to manage verification attempts

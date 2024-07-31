@@ -1,8 +1,8 @@
 ﻿namespace Samid.Application.DTOs;
 
-public class UserStudyMajorsDto
+public class UserEducationMajorsDto
 {
   public Guid Id { get; set; }
   public AcademicYearDto? AcademicYear { get; set; }
-  public StudyMajorsDto? StudyMajors { get; set; }
+  public EducationMajorsDto? EducationMajors { get; set; }
 }

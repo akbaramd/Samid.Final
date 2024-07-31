@@ -9,20 +9,12 @@ using Samid.Infrastructure.Persistence;
 
 namespace Samid.Api.Endpoints.Auth;
 
-public class AuthCompleteProfileEndpoint : Endpoint<AuthCompleteProfileRequest, AuthResponse>
+public class AuthCompleteProfileEndpoint(
+  UserManager<User> userManager,
+  IConfiguration configuration,
+  ApplicationDbContext context)
+  : Endpoint<AuthCompleteProfileRequest, AuthResponse>
 {
-  private readonly IConfiguration _configuration;
-  private readonly ApplicationDbContext _context;
-  private readonly UserManager<User> _userManager;
-
-  public AuthCompleteProfileEndpoint(UserManager<User> userManager, IConfiguration configuration,
-    ApplicationDbContext context)
-  {
-    _userManager = userManager;
-    _configuration = configuration;
-    _context = context;
-  }
-
   public override void Configure()
   {
     Post("/api/auth/complete-profile");
@@ -39,7 +31,7 @@ public class AuthCompleteProfileEndpoint : Endpoint<AuthCompleteProfileRequest, 
       return;
     }
 
-    var user = await _userManager.FindByIdAsync(userId);
+    var user = await userManager.FindByIdAsync(userId);
     if (user == null)
     {
       ThrowError("User not found.");
@@ -48,38 +40,38 @@ public class AuthCompleteProfileEndpoint : Endpoint<AuthCompleteProfileRequest, 
 
     user.UpdateName(req.FirstName, req.LastName);
     user.UpdateBirthDate(req.BirthDate);
-    await _userManager.UpdateAsync(user);
+    await userManager.UpdateAsync(user);
 
-    var gradeFieldOfStudy = await _context.StudyMajors
-      .Include(gfs => gfs.StudyGrade)
-      .Include(gfs => gfs.StudyField)
-      .FirstOrDefaultAsync(gfs => gfs.StudyGradeId == req.GradeOfStudyId &&
-                                  gfs.StudyFieldId == req.FieldOfStudyId, ct);
+    var gradeFieldOfEducation = await context.EducationMajors
+      .Include(gfs => gfs.EducationGrade)
+      .Include(gfs => gfs.EducationField)
+      .FirstOrDefaultAsync(gfs => gfs.EducationGradeId == req.GradeOfEducationId &&
+                                  gfs.EducationFieldId == req.FieldOfEducationId, ct);
 
-    if (gradeFieldOfStudy == null)
+    if (gradeFieldOfEducation == null)
     {
-      ThrowError("GradeFieldOfStudy not found.");
+      ThrowError("GradeFieldOfEducation not found.");
       return;
     }
 
-    var academicYear = await _context.AcademicYears
-      .FirstOrDefaultAsync(ay => ay.StartDate <= DateTime.Now && ay.EndDate >= DateTime.Now, ct);
+    var academicYear = await context.AcademicYears
+      .FirstOrDefaultAsync(ay => ay.StartDate <= DateTime.UtcNow && ay.EndDate >= DateTime.Now, ct);
 
     if (academicYear == null)
     {
       academicYear = new AcademicYear();
-      _context.AcademicYears.Add(academicYear);
-      await _context.SaveChangesAsync(ct);
+      context.AcademicYears.Add(academicYear);
+      await context.SaveChangesAsync(ct);
     }
 
-    var userAcademicYearExists = await _context.UserStudyMajors
-      .AnyAsync(ay => ay.UserId == user.Id && ay.StudyMajorsId == gradeFieldOfStudy.Id, ct);
+    var userAcademicYearExists = await context.UserEducationMajors
+      .AnyAsync(ay => ay.UserId == user.Id && ay.EducationMajorsId == gradeFieldOfEducation.Id, ct);
 
     if (!userAcademicYearExists)
     {
-      var userAcademicYear = new UserStudyMajors(user.Id, gradeFieldOfStudy.Id, academicYear.Id);
-      _context.UserStudyMajors.Add(userAcademicYear);
-      await _context.SaveChangesAsync(ct);
+      var userAcademicYear = new UserEducationMajors(user.Id, gradeFieldOfEducation.Id, academicYear.Id);
+      context.UserEducationMajors.Add(userAcademicYear);
+      await context.SaveChangesAsync(ct);
     }
 
     var token = GenerateJwtToken(user);
@@ -93,8 +85,8 @@ public class AuthCompleteProfileEndpoint : Endpoint<AuthCompleteProfileRequest, 
 
   private string GenerateJwtToken(User user)
   {
-    var roles = _userManager.GetRolesAsync(user).Result;
-    var signingKey = _configuration["Jwt:Key"] ?? "M5T8Qr8LsPuzhPiXE5lOAnPZ7WGrPyXPrNTpLVZ7ysQ=";
+    var roles = userManager.GetRolesAsync(user).Result;
+    var signingKey = configuration["Jwt:Key"] ?? "M5T8Qr8LsPuzhPiXE5lOAnPZ7WGrPyXPrNTpLVZ7ysQ=";
 
     var jwtToken = JwtBearer.CreateToken(o =>
     {

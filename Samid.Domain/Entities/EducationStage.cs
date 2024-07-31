@@ -1,10 +1,10 @@
 ﻿namespace Samid.Domain.Entities
 {
-  public class StudyStage
+  public class EducationStage
   {
-    protected StudyStage() { }
+    protected EducationStage() { }
 
-    public StudyStage(Guid id, string title)
+    public EducationStage(Guid id, string title)
     {
       Id = id;
       Title = title;
@@ -13,8 +13,8 @@
     public Guid Id { get; private set; }
     public string Title { get; private set; } = default!;
 
-    private readonly List<StudyGrade> _studyGrades = new();
-    public IReadOnlyCollection<StudyGrade> StudyGrades => _studyGrades.AsReadOnly();
+    private readonly List<EducationGrade> _educationGrades = new();
+    public IReadOnlyCollection<EducationGrade> EducationGrades => _educationGrades.AsReadOnly();
 
     public void ChangeTitle(string newTitle)
     {
@@ -26,24 +26,24 @@
       Title = newTitle;
     }
 
-    public void AddStudyGrade(StudyGrade grade)
+    public void AddEducationGrade(EducationGrade grade)
     {
       if (grade == null)
       {
         throw new ArgumentNullException(nameof(grade));
       }
 
-      _studyGrades.Add(grade);
+      _educationGrades.Add(grade);
     }
 
-    public void RemoveStudyGrade(StudyGrade grade)
+    public void RemoveEducationGrade(EducationGrade grade)
     {
       if (grade == null)
       {
         throw new ArgumentNullException(nameof(grade));
       }
 
-      _studyGrades.Remove(grade);
+      _educationGrades.Remove(grade);
     }
   }
 }

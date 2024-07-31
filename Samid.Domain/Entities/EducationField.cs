@@ -1,10 +1,10 @@
 ﻿namespace Samid.Domain.Entities
 {
-    public class StudyField
+    public class EducationField
     {
-        protected StudyField() { }
+        protected EducationField() { }
 
-        public StudyField(Guid id, string title)
+        public EducationField(Guid id, string title)
         {
             Id = id;
             Title = title;
@@ -14,9 +14,9 @@
         public string Title { get; private set; } = default!;
 
 
-        private readonly List<StudyGrade> _studyGrades = new();
+        private readonly List<EducationGrade> _educationGrades = new();
 
-        public IReadOnlyCollection<StudyGrade> StudyGrades => _studyGrades.AsReadOnly();
+        public IReadOnlyCollection<EducationGrade> EducationGrades => _educationGrades.AsReadOnly();
 
         public void ChangeTitle(string newTitle)
         {
@@ -28,7 +28,7 @@
             Title = newTitle;
         }
 
-        public void SetParent(StudyField parent)
+        public void SetParent(EducationField parent)
         {
             if (parent == null)
             {
@@ -38,24 +38,24 @@
         }
 
      
-        public void AddStudyGrade(StudyGrade grade)
+        public void AddEducationGrade(EducationGrade grade)
         {
             if (grade == null)
             {
                 throw new ArgumentNullException(nameof(grade));
             }
 
-            _studyGrades.Add(grade);
+            _educationGrades.Add(grade);
         }
 
-        public void RemoveStudyGrade(StudyGrade grade)
+        public void RemoveEducationGrade(EducationGrade grade)
         {
             if (grade == null)
             {
                 throw new ArgumentNullException(nameof(grade));
             }
 
-            _studyGrades.Remove(grade);
+            _educationGrades.Remove(grade);
         }
     }
 }

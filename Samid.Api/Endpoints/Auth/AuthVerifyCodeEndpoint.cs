@@ -8,17 +8,9 @@ using Samid.Domain.Entities;
 
 namespace Samid.Api.Endpoints.Auth;
 
-public class AuthVerifyCodeEndpoint : Endpoint<AuthVerifyCodeRequest, AuthResponse>
+public class AuthVerifyCodeEndpoint(UserManager<User> userManager, IConfiguration configuration)
+  : Endpoint<AuthVerifyCodeRequest, AuthResponse>
 {
-  private readonly IConfiguration _configuration;
-  private readonly UserManager<User> _userManager;
-
-  public AuthVerifyCodeEndpoint(UserManager<User> userManager, IConfiguration configuration)
-  {
-    _userManager = userManager;
-    _configuration = configuration;
-  }
-
   public override void Configure()
   {
     Post("/api/auth/verify-code");
@@ -29,15 +21,15 @@ public class AuthVerifyCodeEndpoint : Endpoint<AuthVerifyCodeRequest, AuthRespon
 
   public override async Task HandleAsync(AuthVerifyCodeRequest req, CancellationToken ct)
   {
-    var user = await _userManager.Users
-      .Include(x => x.UserStudyMajors)
+    var user = await userManager.Users
+      .Include(x => x.UserEducationMajors)
       .ThenInclude(x => x.AcademicYear)
-      .Include(x => x.UserStudyMajors)
-      .ThenInclude(x => x.StudyMajors)
-      .ThenInclude(x => x.StudyField)
-      .Include(x => x.UserStudyMajors)
-      .ThenInclude(x => x.StudyMajors)
-      .ThenInclude(x => x.StudyGrade)
+      .Include(x => x.UserEducationMajors)
+      .ThenInclude(x => x.EducationMajors)
+      .ThenInclude(x => x.EducationField)
+      .Include(x => x.UserEducationMajors)
+      .ThenInclude(x => x.EducationMajors)
+      .ThenInclude(x => x.EducationGrade)
       .FirstOrDefaultAsync(x => x.UserName != null && x.UserName.Equals(req.PhoneNumber), ct);
 
     if (user == null)
@@ -61,18 +53,18 @@ public class AuthVerifyCodeEndpoint : Endpoint<AuthVerifyCodeRequest, AuthRespon
       user.ResetVerificationFailures();
     }
 
-    var code = await _userManager.GetAuthenticationTokenAsync(user, "Phone", "VerificationCode");
+    var code = await userManager.GetAuthenticationTokenAsync(user, "Phone", "VerificationCode");
     if (code != req.Code)
     {
       user.IncrementVerificationFailures();
-      await _userManager.UpdateAsync(user);
+      await userManager.UpdateAsync(user);
       ThrowError("Invalid code.");
       return;
     }
 
-    await _userManager.RemoveAuthenticationTokenAsync(user, "Phone", "VerificationCode");
+    await userManager.RemoveAuthenticationTokenAsync(user, "Phone", "VerificationCode");
     user.ResetVerificationFailures();
-    await _userManager.UpdateAsync(user);
+    await userManager.UpdateAsync(user);
 
     var isProfileComplete = user.IsProfileComplete();
     var token = GenerateJwtToken(user);
@@ -87,8 +79,8 @@ public class AuthVerifyCodeEndpoint : Endpoint<AuthVerifyCodeRequest, AuthRespon
 
   private string GenerateJwtToken(User user)
   {
-    var roles = _userManager.GetRolesAsync(user).Result;
-    var signingKey = _configuration["Jwt:Key"] ?? "M5T8Qr8LsPuzhPiXE5lOAnPZ7WGrPyXPrNTpLVZ7ysQ=";
+    var roles = userManager.GetRolesAsync(user).Result;
+    var signingKey = configuration["Jwt:Key"] ?? "M5T8Qr8LsPuzhPiXE5lOAnPZ7WGrPyXPrNTpLVZ7ysQ=";
 
     var jwtToken = JwtBearer.CreateToken(o =>
     {

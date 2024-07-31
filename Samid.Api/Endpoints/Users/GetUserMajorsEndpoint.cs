@@ -4,19 +4,26 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Samid.Application.DTOs;
-using Samid.Application.DTOs.Authentication;
 using Samid.Domain.Entities;
 using IMapper = AutoMapper.IMapper;
 
-namespace Samid.Api.Endpoints.Auth;
+namespace Samid.Api.Endpoints.Users;
 
 [Authorize]
-public class AuthGetUserProfileEndpoint(UserManager<User> userManager, IMapper mapper)
-  : EndpointWithoutRequest<AuthUserProfileResponse>
+public class GetUserMajorsEndpoint : EndpointWithoutRequest<List<UserEducationMajorsDto>>
 {
+  private readonly IMapper _mapper;
+  private readonly UserManager<User> _userManager;
+
+  public GetUserMajorsEndpoint(UserManager<User> userManager, IMapper mapper)
+  {
+    _userManager = userManager;
+    _mapper = mapper;
+  }
+
   public override void Configure()
   {
-    Get("/api/auth/profile");
+    Get("/api/user/education-majors");
   }
 
   public override async Task HandleAsync(CancellationToken ct)
@@ -24,7 +31,7 @@ public class AuthGetUserProfileEndpoint(UserManager<User> userManager, IMapper m
     var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
     if (userId != null)
     {
-      var user = await userManager.Users
+      var user = await _userManager.Users
         .Include(x => x.UserEducationMajors)
         .ThenInclude(x => x.AcademicYear)
         .Include(x => x.UserEducationMajors)
@@ -44,7 +51,7 @@ public class AuthGetUserProfileEndpoint(UserManager<User> userManager, IMapper m
       }
 
       
-      await SendAsync(new AuthUserProfileResponse { User = mapper.Map<UserDto>(user) }, cancellation: ct);
+      await SendAsync( _mapper.Map<List<UserEducationMajorsDto>>(user.UserEducationMajors) , cancellation: ct);
     }
   }
 }

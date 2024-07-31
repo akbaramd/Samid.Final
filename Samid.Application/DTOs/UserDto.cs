@@ -6,7 +6,7 @@ public class UserDto
 {
   public UserDto()
   {
-    UserStudyMajors = new List<UserStudyMajorsDto>();
+    UserEducationMajors = new List<UserEducationMajorsDto>();
   }
 
   public Guid Id { get; set; }
@@ -17,5 +17,5 @@ public class UserDto
   public DateTime? BirthDate { get; set; }
   public string? BirthPersianDate => BirthDate?.ToPersianDate();
 
-  public ICollection<UserStudyMajorsDto> UserStudyMajors { get; set; }
+  public ICollection<UserEducationMajorsDto> UserEducationMajors { get; set; }
 }

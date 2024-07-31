@@ -41,7 +41,7 @@ namespace Samid.Domain.Entities
     private DateTime GetStartOfAcademicYear()
     {
       var persianCalendar = new PersianCalendar();
-      var now = DateTime.Now;
+      var now = DateTime.UtcNow;
       var year = persianCalendar.GetYear(now);
       var month = persianCalendar.GetMonth(now);
 

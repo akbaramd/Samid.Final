@@ -12,8 +12,8 @@ public class AuthCompleteProfileRequest
   public string FirstName { get; set; } = string.Empty;
   public string LastName { get; set; } = string.Empty;
   public DateTime BirthDate { get; set; }
-  public Guid GradeOfStudyId { get; set; }
-  public Guid? FieldOfStudyId { get; set; }
+  public Guid GradeOfEducationId { get; set; }
+  public Guid? FieldOfEducationId { get; set; }
 }
 
 public class CompleteProfileRequestValidator : Validator<AuthCompleteProfileRequest>
@@ -25,10 +25,10 @@ public class CompleteProfileRequestValidator : Validator<AuthCompleteProfileRequ
 
     RuleFor(x => x.LastName)
       .NotEmpty().WithMessage("Last name is required");
-    RuleFor(x => x.GradeOfStudyId)
-      .NotEmpty().WithMessage("GradeOfStudyId  is required");
+    RuleFor(x => x.GradeOfEducationId)
+      .NotEmpty().WithMessage("GradeOfEducationId  is required");
     RuleFor(x => x.BirthDate)
       .NotEmpty().WithMessage("Birth date is required")
-      .LessThan(DateTime.Now).WithMessage("Birth date cannot be in the future");
+      .LessThan(DateTime.UtcNow).WithMessage("Birth date cannot be in the future");
   }
 }
