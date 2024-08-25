@@ -10,7 +10,7 @@ public static class ApplicationDbContextSeed
   {
     if (!context.EducationStages.Any())
     {
-      var jsonData = File.ReadAllText("D:\\Projects\\Samid.backend\\Samid.Infrastructure\\stages.json");
+      var jsonData = File.ReadAllText("stages.json");
       var stages = JsonConvert.DeserializeObject<List<StageDto>>(jsonData);
 
       if (stages != null)

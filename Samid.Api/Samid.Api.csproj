@@ -25,4 +25,10 @@
         <ProjectReference Include="..\Samid.Infrastructure\Samid.Infrastructure.csproj"/>
     </ItemGroup>
 
+    <ItemGroup>
+      <None Include="stages.json">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+
 </Project>

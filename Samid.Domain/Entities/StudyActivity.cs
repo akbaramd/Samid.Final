@@ -6,10 +6,10 @@ namespace Samid.Domain.Entities
   {
     private StudyActivity() { }
 
-    public StudyActivity(Guid userId, Guid majorId, Guid bookId , TimeSpan duration , string? description = null)
+    public StudyActivity(Guid userId, Guid userMajorId, Guid bookId , TimeSpan duration , string? description = null)
     {
       UserId = userId;
-      UserEducationMajorsId = majorId;
+      UserEducationUserMajorsId = userMajorId;
       EducationBookId = bookId;
       Duration = duration;
       Description = description;
@@ -24,7 +24,7 @@ namespace Samid.Domain.Entities
     public User User { get; private set; } = default!;
 
     [Required]
-    public Guid  UserEducationMajorsId { get; private set; }
+    public Guid  UserEducationUserMajorsId { get; private set; }
     public UserEducationMajors UserEducationMajors { get; private set; } = default!;
     
     [Required]

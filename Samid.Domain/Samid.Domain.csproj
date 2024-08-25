@@ -7,7 +7,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Folder Include="Domain Events\"/>
         <Folder Include="DomainExceptions\"/>
         <Folder Include="ValueObjects\"/>
     </ItemGroup>

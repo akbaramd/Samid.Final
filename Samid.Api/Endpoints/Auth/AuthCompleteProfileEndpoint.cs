@@ -3,6 +3,7 @@ using FastEndpoints;
 using FastEndpoints.Security;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Samid.Api.Results;
 using Samid.Application.DTOs.Authentication;
 using Samid.Domain.Entities;
 using Samid.Infrastructure.Persistence;
@@ -13,12 +14,32 @@ public class AuthCompleteProfileEndpoint(
   UserManager<User> userManager,
   IConfiguration configuration,
   ApplicationDbContext context)
-  : Endpoint<AuthCompleteProfileRequest, AuthResponse>
+  : Endpoint<AuthCompleteProfileRequest, ApiResult<AuthResponse>>
 {
   public override void Configure()
   {
-    Post("/api/auth/complete-profile");
+    Post(RouteConstants.AuthCompleteProfile);
     Validator<CompleteProfileRequestValidator>();
+    Summary(c =>
+    {
+      c.Summary = "Complete the user's profile with additional details.";
+      c.Description = "This endpoint completes the user's profile by updating their name, birthdate, and education details.";
+
+      c.ExampleRequest = new AuthCompleteProfileRequest
+      {
+        FirstName = "John",
+        LastName = "Doe",
+        BirthDate = new DateTime(2000, 1, 1),
+        GradeOfEducationId = Guid.NewGuid(),
+        FieldOfEducationId = Guid.NewGuid()
+      };
+
+      c.Response<ApiResult<AuthResponse>>(200, "Profile completed successfully.");
+      c.Response<ApiResult>(400, "Invalid request or user not found.");
+      c.Response<ApiResult>(404, "GradeFieldOfEducation not found.");
+      c.Response<ApiResult>(500, "An error occurred while processing the request.");
+    });
+    Options(x => x.WithTags(RouteConstants.AuthPrefix));
   }
 
   public override async Task HandleAsync(AuthCompleteProfileRequest req, CancellationToken ct)
@@ -27,14 +48,14 @@ public class AuthCompleteProfileEndpoint(
 
     if (string.IsNullOrEmpty(userId))
     {
-      ThrowError("User ID not found in token.");
+      await SendAsync(ApiResult.BadRequest("User ID not found in token."), StatusCodes.Status400BadRequest, ct);
       return;
     }
 
     var user = await userManager.FindByIdAsync(userId);
     if (user == null)
     {
-      ThrowError("User not found.");
+      await SendAsync(ApiResult.NotFound("User not found."), StatusCodes.Status404NotFound, ct);
       return;
     }
 
@@ -50,7 +71,7 @@ public class AuthCompleteProfileEndpoint(
 
     if (gradeFieldOfEducation == null)
     {
-      ThrowError("GradeFieldOfEducation not found.");
+      await SendAsync(ApiResult.BadRequest("GradeFieldOfEducation not found."), StatusCodes.Status400BadRequest, ct);
       return;
     }
 
@@ -80,13 +101,14 @@ public class AuthCompleteProfileEndpoint(
     {
       Token = token, Expiration = DateTime.UtcNow.AddHours(1), IsProfileComplete = true
     };
-    await SendAsync(response, cancellation: ct);
+
+    await SendAsync(ApiResult<AuthResponse>.Success(response, "Profile completed successfully."), cancellation: ct);
   }
 
   private string GenerateJwtToken(User user)
   {
     var roles = userManager.GetRolesAsync(user).Result;
-    var signingKey = configuration["Jwt:Key"] ?? "M5T8Qr8LsPuzhPiXE5lOAnPZ7WGrPyXPrNTpLVZ7ysQ=";
+    var signingKey = configuration["Jwt:Key"] ?? ApplicationConstants.DefaultJwtSigningKey;
 
     var jwtToken = JwtBearer.CreateToken(o =>
     {

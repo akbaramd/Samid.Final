@@ -1,14 +1,18 @@
 ﻿using System.Net;
 using System.Text.Json;
+using Samid.Api.Results;
 using Samid.Domain.Exceptions;
-using ApplicationException = Samid.Application.Exceptions.ApplicationException;
+using Samid.Application.Exceptions;
+using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Http;
+using ApplicationException = System.ApplicationException;
 
 namespace Samid.Api.Middlewares;
 
 public class ExceptionHandlingMiddleware
 {
-  private readonly ILogger<ExceptionHandlingMiddleware> _logger;
   private readonly RequestDelegate _next;
+  private readonly ILogger<ExceptionHandlingMiddleware> _logger;
 
   public ExceptionHandlingMiddleware(RequestDelegate next, ILogger<ExceptionHandlingMiddleware> logger)
   {
@@ -28,34 +32,22 @@ public class ExceptionHandlingMiddleware
     }
   }
 
-  private Task HandleExceptionAsync(HttpContext context, Exception exception)
+  private async Task HandleExceptionAsync(HttpContext context, Exception exception)
   {
     _logger.LogError(exception, exception.Message);
 
-    var code = HttpStatusCode.InternalServerError;
-    var result = string.Empty;
-
-    switch (exception)
+    var (statusCode, result) = exception switch
     {
-      case ApplicationException _:
-        code = HttpStatusCode.BadRequest;
-        result = JsonSerializer.Serialize(new { error = exception.Message });
-        break;
-      case DomainException _:
-        code = HttpStatusCode.UnprocessableEntity;
-        result = JsonSerializer.Serialize(new { error = exception.Message });
-        break;
-      case UnauthorizedAccessException _:
-        code = HttpStatusCode.Unauthorized;
-        result = JsonSerializer.Serialize(new { error = exception.Message });
-        break;
-      default:
-        result = JsonSerializer.Serialize(new { error = "An unexpected error occurred." });
-        break;
-    }
+      ApplicationException => (HttpStatusCode.BadRequest, ApiResult.BadRequest(exception.Message)),
+      DomainException => (HttpStatusCode.UnprocessableEntity, ApiResult.Error(exception.Message, (int)HttpStatusCode.UnprocessableEntity)),
+      UnauthorizedAccessException => (HttpStatusCode.Unauthorized, ApiResult.Unauthorized(exception.Message)),
+      _ => (HttpStatusCode.InternalServerError, ApiResult.InternalServerError("An unexpected error occurred."))
+    };
 
     context.Response.ContentType = "application/json";
-    context.Response.StatusCode = (int)code;
-    return context.Response.WriteAsync(result);
+    context.Response.StatusCode = (int)statusCode;
+
+    var response = JsonSerializer.Serialize(result);
+    await context.Response.WriteAsync(response);
   }
 }
